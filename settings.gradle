@@ -1,0 +1,5 @@
+rootProject.name = 'Aufgabe09REST'
+include 'Common'
+include 'Server'
+include 'Client'
+
