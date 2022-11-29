@@ -5,46 +5,51 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
-@Path("studenten")
-public class StudentRest {
-    private static Student dummy;
+@Path("reservations")
+public class ReservationRest {
     private static Map<Integer, Student> studenten;
+    private final Reservation dummy = new Reservation("", false);
+    private static Reservation[][] seats;
+    private static final int ROWS = 10;
+    private static final int COLUMNS = 20;
 
     static {
-        dummy = new Student();
-        studenten = new ConcurrentHashMap<>();
-        Student s = new Student(1, "Harry");
-        studenten.put(s.getId(), s);
-        s = new Student(2, "Ron");
-        studenten.put(s.getId(), s);
-        s = new Student(3, "Hermione");
-        studenten.put(s.getId(), s);
+        seats =
+                IntStream.range(0, ROWS) //rows (x)
+                        .mapToObj(x -> IntStream.range(0, COLUMNS) //columns (y)
+                                .mapToObj(y -> new Reservation("", false))
+                                .toArray(Reservation[]::new))
+                        .toArray(Reservation[][]::new);
     }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public static Response getAllStudentsAsText() {
+    public static Response getAllSeatsAsText() {
         StringBuilder stringBuilder = new StringBuilder();
-        studenten.forEach((k, s) -> stringBuilder.append(s).append("\n"));
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLUMNS; col++) {
+                stringBuilder.append(seats[row][col].toString()).append(System.lineSeparator());
+            }
+        }
         return Response.ok(stringBuilder.toString()).build();
     }
 
     @GET
-    @Path("{id}")
+    @Path("{seat}")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response getStudentAsText(@PathParam("id") int id) {
-        System.out.println("GET " + id);
-        Student s = studenten.getOrDefault(id, dummy);
-        return Response.ok(s.toString()).build();
+    public Response getReservationAsText(@PathParam("seat") String seatNR) {
+        System.out.println("GET " + seatNR);
+        String[] split = seatNR.split("-");
+        Reservation r = seats[Integer.parseInt(split[0])][Integer.parseInt(split[1])];
+        return Response.ok(r.toString()).build();
     }
 
     @PUT
-    @Path("{id}")
+    @Path("{seat}")
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response putStudentsByID(@PathParam("id") int id, String student) {
+    public Response putReservationBySeat(@PathParam("seat") String seatNR, String student) {
         String[] s = student.split(": ");
         Student stud = new Student(Integer.parseInt(s[0]), s[1]);
         Response response;
@@ -71,8 +76,8 @@ public class StudentRest {
     }
 
     @DELETE
-    @Path("{id}")
-    public Response deleteStudent (@PathParam("id") int id) {
+    @Path("{seat}")
+    public Response deleteStudent (@PathParam("seat") String seatNR) {
         Response response;
         if( studenten . containsKey (id)) {
             studenten .remove(id);
@@ -82,5 +87,10 @@ public class StudentRest {
             response = Response.noContent().status(Response.Status.NOT_FOUND).build();
         }
         return response;
+    }
+
+    public static int[] getSeat(String s) {
+        int[] seat = new int[2];
+        return seat;
     }
 }

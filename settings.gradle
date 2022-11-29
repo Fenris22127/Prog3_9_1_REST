@@ -1,4 +1,4 @@
-rootProject.name = 'Aufgabe09REST'
+rootProject.name = 'Prog3_9_1_REST'
 include 'Common'
 include 'Server'
 include 'Client'

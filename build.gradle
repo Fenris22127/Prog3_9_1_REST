@@ -9,7 +9,7 @@ subprojects {
     targetCompatibility = '17'
 
     ext {
-        junitVersion = '5.8.1'
+        junitVersion = '5.9.1'
         jerseyVersion = '3.0.3'
         grizzlyVersion = '3.0.1'
         restVersion = '3.0.0'
