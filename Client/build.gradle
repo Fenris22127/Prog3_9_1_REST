@@ -15,5 +15,5 @@ dependencies {
     implementation "org.glassfish.jersey.core:jersey-client:${jerseyVersion}"
     implementation "org.glassfish.jersey.inject:jersey-hk2:${jerseyVersion}"
     implementation "org.glassfish.jaxb:jaxb-runtime:${jaxbVersion}"
-    implementation project(':Common')
+    implementation project(':Server')
 }

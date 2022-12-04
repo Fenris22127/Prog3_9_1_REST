@@ -4,9 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static de.medieninformatik.server.ReservationRest.getSeat;
-import static org.junit.jupiter.api.Assertions.*;
-
 class ReservationTest {
 
     @Test
@@ -28,5 +25,13 @@ class ReservationTest {
         seatNr[1] = Integer.parseInt(split[1]);
         System.out.println(Arrays.toString(split));
         System.out.println(Arrays.toString(seatNr));
+    }
+
+    @Test
+    void stringSplitTest() {
+        String res = "1: 2: Me";
+        String[] s = res.split(": ");
+        System.out.println(Arrays.toString(s));
+        //Student stud = new Student(Integer.parseInt(s[0]), s[1]);
     }
 }

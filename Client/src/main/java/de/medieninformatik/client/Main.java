@@ -1,46 +1,43 @@
 package de.medieninformatik.client;
 
-import java.util.Arrays;
-import java.util.stream.IntStream;
-
+/**
+ * TODO:
+ * @author Elisa Johanna Woelk (m30192)
+ */
 public class Main {
+
+    /**
+     * TODO:
+     * @param args <-
+     */
     public static void main(String[] args) {
+
         final String BASE_URI = "http://localhost:8080/rest";
 
-        StudentClient students = new StudentClient(BASE_URI);
-        students.get("/studenten/1"); //holt Student mit ID 1
-        students.get("/studenten");
+        ReservationClient reservations = new ReservationClient(BASE_URI);
 
-        // hinzufügen eines neuen Studenten mit POST
-        students.post("/studenten", new Student(4, "Neville"));
+        //~ ✓
+        reservations.getAllSeats(); //print all seats as either [ ] (free) or [X] (booked)
 
-        // Fehler: studenten/5 (Student mit ID 5) existiert nicht, daher kein PUT möglich
-        students.put("/studenten/5", new Student(5,"Draco"));
+        //~ ✓
+        reservations.getReservation(1, 2); //get Reservation for seat in row 1, column 2
 
-        // Überschreiben eines bestehenden Studenten
-        students.put("/studenten/2", new Student(2, "Ronald"));
+        //~ ✓
+        reservations.makeReservation(1, 2, "Me"); //book seat in row 1, column 2
 
-        students.get("/studenten");
-        students.delete("/studenten/4"); //löscht Student mit ID 4
-        students.get("/studenten");
-    }
+        //~ ✓
+        reservations.hasReservation(1, 2); //check, if seat in row 1, column 2 is booked
 
-    private static void studentMain(String BASE_URI) {
-        StudentClient students = new StudentClient(BASE_URI);
-        students.get("/studenten/1"); //holt Student mit ID 1
-        students.get("/studenten");
+        //~ ✓
+        reservations.getReservation(1, 2); //get reservation for booked seat in row 1, column 2
 
-        // hinzufügen eines neuen Studenten mit POST
-        students.post("/studenten", new Student(4, "Neville"));
+        //~ ✓
+        reservations.getAllSeats(); //print all seats as either [ ] (free) or [X] (booked)
 
-        // Fehler: studenten/5 (Student mit ID 5) existiert nicht, daher kein PUT möglich
-        students.put("/studenten/5", new Student(5,"Draco"));
+        //~ ✓
+        reservations.deleteReservation(1, 2); //delete reservation for seat in row 1, column 2
 
-        // Überschreiben eines bestehenden Studenten
-        students.put("/studenten/2", new Student(2, "Ronald"));
-
-        students.get("/studenten");
-        students.delete("/studenten/4"); //löscht Student mit ID 4
-        students.get("/studenten");
+        //~ ✓
+        reservations.getReservation(1, 2); //check if reservation for seat in row 1, column 2 was deleted
     }
 }

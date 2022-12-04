@@ -1,5 +1,5 @@
 application {
-    mainClass  = "${group}.${project.name.toLowerCase()}.Server"
+    mainClass = "${group}.${project.name.toLowerCase()}.Server"
 }
 
 jar {
@@ -16,6 +16,4 @@ dependencies {
     implementation "org.glassfish.grizzly:grizzly-http-server:${grizzlyVersion}"
     implementation "org.glassfish.grizzly:grizzly-websockets:${grizzlyVersion}"
     implementation "org.glassfish.jersey.containers:jersey-container-grizzly2-http:${jerseyVersion}"
-    implementation project(':Common')
-    implementation project(':Client')
 }

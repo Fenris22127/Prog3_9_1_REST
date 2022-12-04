@@ -1,18 +1,39 @@
 package de.medieninformatik.server;
 
-import de.medieninformatik.client.Student;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 
-import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.WARNING;
+
+/**
+ * TODO:
+ * @author Elisa Johanna Woelk (m30192)
+ */
 @Path("reservations")
 public class ReservationRest {
-    private static Map<Integer, Student> studenten;
-    private final Reservation dummy = new Reservation("", false);
+
+    /**
+     * TODO:
+     */
+    private final Logger logger = Logger.getLogger(ReservationRest.class.getName());
+
+    /**
+     * TODO:
+     */
     private static Reservation[][] seats;
+
+    /**
+     * TODO:
+     */
     private static final int ROWS = 10;
+
+    /**
+     * TODO:
+     */
     private static final int COLUMNS = 20;
 
     static {
@@ -24,9 +45,36 @@ public class ReservationRest {
                         .toArray(Reservation[][]::new);
     }
 
+    /**
+     * TODO:
+     * @return
+     */
+    @GET
+    @Path("/seats")
+    @Produces(MediaType.TEXT_PLAIN)
+    public static Response getAllSeats() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLUMNS; col++) {
+                if (seats[row][col].isBooked()) {
+                    stringBuilder.append("[X] ");
+                }
+                else {
+                    stringBuilder.append("[ ] ");
+                }
+            }
+            stringBuilder.append(System.lineSeparator());
+        }
+        return Response.ok(stringBuilder.toString()).build();
+    }
+
+    /**
+     * TODO:
+     * @return
+     */
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public static Response getAllSeatsAsText() {
+    public static Response getAllReservations() {
         StringBuilder stringBuilder = new StringBuilder();
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLUMNS; col++) {
@@ -36,61 +84,102 @@ public class ReservationRest {
         return Response.ok(stringBuilder.toString()).build();
     }
 
+    /**
+     * TODO:
+     * @param row
+     * @param col
+     * @return
+     */
     @GET
-    @Path("{seat}")
+    @Path("{row}/{col}")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response getReservationAsText(@PathParam("seat") String seatNR) {
-        System.out.println("GET " + seatNR);
-        String[] split = seatNR.split("-");
-        Reservation r = seats[Integer.parseInt(split[0])][Integer.parseInt(split[1])];
+    public Response getReservation(
+            @PathParam("row") int row,
+            @PathParam("col") int col) {
+        logger.log(INFO, "Getting Reservation for Seat in row {0} column {1}", new Object[] {row, col});
+        Reservation r = seats[row][col];
         return Response.ok(r.toString()).build();
     }
 
+    /**
+     * TODO:
+     * @param row
+     * @param col
+     * @return
+     */
+    @GET
+    @Path("/check")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response checkReservation(
+            @QueryParam("row") int row,
+            @QueryParam("column") int col) {
+        boolean exists = seats[row][col].isBooked();
+        return Response.ok(exists).build();
+    }
+
+    /**
+     * TODO:
+     * @param row
+     * @param col
+     * @param name
+     * @return
+     */
     @PUT
-    @Path("{seat}")
+    @Path("{row}/{col}")
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response putReservationBySeat(@PathParam("seat") String seatNR, String student) {
-        String[] s = student.split(": ");
-        Student stud = new Student(Integer.parseInt(s[0]), s[1]);
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response makeReservation(
+            @PathParam("row") int row,
+            @PathParam("col") int col,
+            String name) {
         Response response;
-        if (studenten.containsKey(id)) {
-            studenten.put(id, stud);
-            response = Response.noContent().status(Response.Status.OK).build();
+        try {
+            if (!seats[row][col].isBooked()) {
+                seats[row][col].setName(name);
+                seats[row][col].setBooked(true);
+                logger.log(INFO, "Created new Reservation under {0} for seat {1}-{2}", new Object[]{name, row, col});
+                response = Response.noContent().status(Response.Status.OK).build();
+            } else {
+                logger.log(INFO, "Seat {0}-{1} is already booked under {2}", new Object[]{row, col, seats[row][col].getName()});
+                response = Response.noContent().status(Response.Status.CONFLICT).build();
+            }
         }
-        else {
+        catch (ArrayIndexOutOfBoundsException e) {
+            logger.log(WARNING, "Seat {0}-{1} is not a valid seat!", new Object[]{row, col});
             response = Response.noContent().status(Response.Status.NOT_FOUND).build();
         }
         return response;
     }
-    @POST
-    @Consumes (MediaType.TEXT_PLAIN)
-    public Response newStudent (String newStudent, @Context UriInfo uriInfo) {
-        String[] s = newStudent.split(": ");
-        Student stud = new Student(Integer.parseInt(s[0]), s[1]);
-        System.out.print("POST: " + stud);
-        Integer id = stud.getId();
-        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-        uriBuilder.path(s[0]);
-        Student p = studenten.put(id, stud);
-        return Response.created(uriBuilder.build()).build();
-    }
 
+    /**
+     * TODO:
+     * @param row
+     * @param col
+     * @return
+     */
     @DELETE
-    @Path("{seat}")
-    public Response deleteStudent (@PathParam("seat") String seatNR) {
+    @Path("{row}/{col}")
+    public Response deleteReservation(
+            @PathParam("row") int row,
+            @PathParam("col") int col) {
         Response response;
-        if( studenten . containsKey (id)) {
-            studenten .remove(id);
-            response = Response.noContent().status(Response.Status.OK).build();
+        try {
+            if (seats[row][col].isBooked()) {
+                seats[row][col].setBooked(false);
+                seats[row][col].setName("");
+                logger.log(INFO, "Reservation for seat {0}-{1} under {2} was deleted!",
+                        new Object[]{row, col, seats[row][col].getName()});
+                response = Response.noContent().status(Response.Status.OK).build();
+            } else {
+                logger.log(WARNING, "Reservation for seat {0}-{1} could not be deleted, seat is not booked!",
+                        new Object[]{row, col});
+                response = Response.noContent().status(Response.Status.NOT_FOUND).build();
+            }
         }
-        else {
+        catch(ArrayIndexOutOfBoundsException e) {
+            logger.log(WARNING, "Seat {0}-{1} is not a valid seat!", new Object[]{row, col});
             response = Response.noContent().status(Response.Status.NOT_FOUND).build();
         }
         return response;
-    }
-
-    public static int[] getSeat(String s) {
-        int[] seat = new int[2];
-        return seat;
     }
 }

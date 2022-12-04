@@ -1,12 +1,11 @@
-package de.medieninformatik.server;
+package de.medieninformatik.server.REMOVE;
 
-import de.medieninformatik.client.Student;
+import de.medieninformatik.server.REMOVE.Student;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.IntStream;
 
 @Path("studenten")
 public class StudentRest {
@@ -39,6 +38,15 @@ public class StudentRest {
         System.out.println("GET " + id);
         Student s = studenten.getOrDefault(id, dummy);
         return Response.ok(s.toString()).build();
+    }
+
+    @GET
+    @Path("check")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response studentExists(@QueryParam("id") int id) {
+        System.out.println("GET " + id);
+        boolean exists = studenten.containsKey(id);
+        return Response.ok(exists).build();
     }
 
     @PUT

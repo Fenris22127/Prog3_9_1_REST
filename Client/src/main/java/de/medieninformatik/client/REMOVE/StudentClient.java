@@ -1,5 +1,6 @@
-package de.medieninformatik.client;
+package de.medieninformatik.client.REMOVE;
 
+import de.medieninformatik.server.REMOVE.Student;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -11,11 +12,12 @@ public class StudentClient {
     private final Client client;
     private final String baseURI;
 
-    public StudentClient (String uri) {
+    public StudentClient(String uri) {
         this.baseURI = uri;
         this.client = ClientBuilder.newClient();
     }
 
+    //Get Students
     public void get(String uri) {
         WebTarget target = getTarget("GET", uri);
         Response response = target.request().accept(MediaType.TEXT_PLAIN).get();
@@ -25,6 +27,7 @@ public class StudentClient {
         }
     }
 
+    //Create Student
     public void post(String uri , Student student) {
         WebTarget target = getTarget("POST", uri);
         String stud = student.getId() + ": " + student.getName();
@@ -36,6 +39,7 @@ public class StudentClient {
         }
     }
 
+    //Overwrite Student
     public void put(String uri, Student student) {
         WebTarget target = getTarget("PUT", uri);
         String stud = student.getId() + ": " + student.getName();
@@ -44,14 +48,16 @@ public class StudentClient {
         status(response);
     }
 
+    //Delete Student
     public void delete(String uri) {
         WebTarget target = getTarget("DELETE", uri);
         Response response = target.request().delete();
         status(response);
     }
 
-    private WebTarget getTarget(String crud , String uri) {
-        System.out.printf("%n--- %s %s%s%n", crud, baseURI, uri);
+    private WebTarget getTarget(String annotation , String uri) {
+        //Ausgabe: --- [POST/PUT/...] [Base-Path][Specific Path]
+        System.out.printf("%n--- %s %s%s%n", annotation, baseURI, uri);
         return client.target(baseURI + uri);
     }
 

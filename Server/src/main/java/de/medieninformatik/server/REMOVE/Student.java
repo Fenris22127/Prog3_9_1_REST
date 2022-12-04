@@ -1,4 +1,4 @@
-package de.medieninformatik.client;
+package de.medieninformatik.server.REMOVE;
 
 public class Student {
     private int id;

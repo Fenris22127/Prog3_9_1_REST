@@ -1,5 +1,6 @@
-package de.medieninformatik.server;
+package de.medieninformatik.server.REMOVE;
 
+import de.medieninformatik.server.REMOVE.StudentApplication;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.ServerConfiguration;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
@@ -13,28 +14,16 @@ import java.util.logging.Logger;
 
 import static java.util.logging.Level.INFO;
 
-/**
- * //TODO:
- * @author Elisa Johanna Woelk (m30192)
- */
-public class Server {
+public class StudentServer {
 
-    /**
-     * TODO:
-     */
     private static final Logger LOGGER = Logger.getLogger("org.glassfish");
 
-    /**
-     * TODO:
-     * @param args
-     * @throws URISyntaxException
-     * @throws IOException
-     */
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) throws IOException, URISyntaxException {
         // listen on every available network interface
-        URI baseUri = new URI("http://localhost:8080/rest"); //TODO:
-        ResourceConfig config = ResourceConfig.forApplicationClass(ReservationApplication.class);
+        URI baseUri = new URI("http://localhost:8080/rest");
+        ResourceConfig config = ResourceConfig.forApplicationClass(StudentApplication.class);
         HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseUri, config);
+        // Optional: Einbindung statischer Webseiten:
         StaticHttpHandler handler = new StaticHttpHandler("web");
         handler.setFileCacheEnabled(false);
         ServerConfiguration serverConfig = server.getServerConfiguration();
@@ -42,8 +31,7 @@ public class Server {
 
         if(!server.isStarted()) server.start();
         LOGGER.log(INFO, "http://localhost:8080/rest/");
-        LOGGER.log(INFO, "Server started");
-        LOGGER.log(INFO, "ENTER stops the Server");
+        LOGGER.log(INFO, "ENTER stoppt den Server");
         System.in.read();
         server.shutdownNow();
     }

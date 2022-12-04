@@ -3,7 +3,7 @@ package de.medieninformatik.server;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import static de.medieninformatik.server.StudentRest.getAllStudentsAsText;
+import static de.medieninformatik.server.REMOVE.StudentRest.getAllStudentsAsText;
 
 class StudentRestTest {
 
